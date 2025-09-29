@@ -7,17 +7,25 @@ import { Postagem } from '../entities/postagem.entity';
 export class PostagemService {
   constructor(
     @InjectRepository(Postagem)
-    private postagemRepository: Repository<Postagem>
+    private postagemRepository: Repository<Postagem>,
   ) {}
+
   async findAll(): Promise<Postagem[]> {
-    return await this.postagemRepository.find();
+    return await this.postagemRepository.find({
+      relations: {
+        tema: true,
+      },
+    });
   }
 
   async findById(id: number): Promise<Postagem> {
     const postagem = await this.postagemRepository.findOne({
       where: {
-        id
-      }
+        id,
+      },
+      relations: {
+        tema: true,
+      },
     });
 
     if (!postagem)
@@ -29,9 +37,12 @@ export class PostagemService {
   async findAllByTitulo(titulo: string): Promise<Postagem[]> {
     return await this.postagemRepository.find({
       where: {
-        titulo: ILike(`%${titulo}%`)
-      }
-    })
+        titulo: ILike(`%${titulo}%`),
+      },
+      relations: {
+        tema: true,
+      },
+    });
   }
 
   async create(postagem: Postagem): Promise<Postagem> {
@@ -40,11 +51,13 @@ export class PostagemService {
 
   async update(postagem: Postagem): Promise<Postagem> {
     await this.findById(postagem.id);
+
     return await this.postagemRepository.save(postagem);
   }
 
   async delete(id: number): Promise<DeleteResult> {
     await this.findById(id);
+
     return await this.postagemRepository.delete(id);
   }
 }
