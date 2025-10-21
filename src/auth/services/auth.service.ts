@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UsuarioService } from '../../usuario/services/usuario.service';
 import { JwtService } from '@nestjs/jwt';
 import { Bcrypt } from '../bcrypt/bcrypt';
 import { UsuarioLogin } from '../entities/usuariologin.entity';
+import { UsuarioService } from './../../usuario/services/usuario.service';
 
 @Injectable()
 export class AuthService {
@@ -16,10 +16,7 @@ export class AuthService {
     const buscaUsuario = await this.usuarioService.findByUsuario(username);
 
     if (!buscaUsuario)
-      throw new HttpException(
-        'Usuário e/ou login inválidos!',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException('Usuário não encontrado!', HttpStatus.NOT_FOUND);
 
     const matchPassword = await this.bcrypt.compararSenhas(
       password,
@@ -27,11 +24,12 @@ export class AuthService {
     );
 
     if (buscaUsuario && matchPassword) {
-      //spread operator - está quebrando os atributos em duas partes e retirando a senha do retorno. Caso quueira retirar mais de um atributo da lista de retorno, é só adiciocar ao lado da senha.
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { senha, ...resposta } = buscaUsuario;
+
       return resposta;
     }
+
     return null;
   }
 
@@ -45,7 +43,7 @@ export class AuthService {
     return {
       id: buscaUsuario?.id,
       nome: buscaUsuario?.nome,
-      usuario: buscaUsuario?.usuario,
+      usuario: usuarioLogin.usuario,
       senha: '',
       foto: buscaUsuario?.foto,
       token: `Bearer ${this.jwtService.sign(payload)}`,

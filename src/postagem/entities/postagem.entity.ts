@@ -1,4 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
+
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
@@ -9,27 +11,33 @@ import {
 import { Tema } from '../../tema/entities/tema.entity';
 import { Usuario } from '../../usuario/entities/usuario.entity';
 
-@Entity({ name: 'tb_postagens' }) // Define o nome da tabela no banco de dados
+@Entity({ name: 'tb_postagens' })
 export class Postagem {
   @PrimaryGeneratedColumn()
+  @ApiProperty()
   id: number;
 
   @IsNotEmpty()
   @Column({ length: 100, nullable: false })
+  @ApiProperty()
   titulo: string;
 
   @IsNotEmpty()
   @Column({ length: 1000, nullable: false })
+  @ApiProperty()
   texto: string;
 
   @UpdateDateColumn()
+  @ApiProperty()
   data: Date;
 
+  @ApiProperty({ type: () => Tema })
   @ManyToOne(() => Tema, (tema) => tema.postagem, {
     onDelete: 'CASCADE',
   })
   tema: Tema;
 
+  @ApiProperty({ type: () => Usuario })
   @ManyToOne(() => Usuario, (usuario) => usuario.postagem, {
     onDelete: 'CASCADE',
   })

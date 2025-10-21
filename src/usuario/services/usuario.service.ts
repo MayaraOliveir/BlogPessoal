@@ -30,28 +30,36 @@ export class UsuarioService {
         id,
       },
     });
-    if (!usuario)
-      throw new HttpException('Usuario não encontrado!', HttpStatus.NOT_FOUND);
+
+    if (!usuario) {
+      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+    }
+
     return usuario;
   }
 
   async create(usuario: Usuario): Promise<Usuario> {
     const buscaUsuario = await this.findByUsuario(usuario.usuario);
 
-    if (buscaUsuario)
-      throw new HttpException('O usuario já existe!', HttpStatus.BAD_REQUEST);
+    if (buscaUsuario) {
+      throw new HttpException('O Usuário já existe!', HttpStatus.BAD_REQUEST);
+    }
+
     usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha);
     return await this.usuarioRepository.save(usuario);
   }
 
   async update(usuario: Usuario): Promise<Usuario> {
     await this.findById(usuario.id);
+
     const buscaUsuario = await this.findByUsuario(usuario.usuario);
-    if (buscaUsuario && buscaUsuario.id !== usuario.id)
+
+    if (buscaUsuario && buscaUsuario.id !== usuario.id) {
       throw new HttpException(
-        'Usuário (e-mail) ja cadastradoo',
+        'Usuário (e-mail) já Cadastrado!',
         HttpStatus.BAD_REQUEST,
       );
+    }
     usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha);
     return await this.usuarioRepository.save(usuario);
   }

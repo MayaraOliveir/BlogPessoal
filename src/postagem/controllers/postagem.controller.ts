@@ -11,20 +11,20 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 import { Postagem } from '../entities/postagem.entity';
-import { PostagemService } from './../services/postagem.service';
+import { PostagemService } from '../services/postagem.service';
 
+@ApiTags('Postagem')
 @UseGuards(JwtAuthGuard)
-@Controller('/postagens') //sempre terá o @controller e o seu caminho que nesse caso é /postagens/.
+@Controller('/postagens')
+@ApiBearerAuth('jwt')
 export class PostagemController {
-  constructor(private readonly postagemService: PostagemService) {} //a controller precisa da minha postagem service. Readonly, apenas de leitua. Usa as coisas da service.
+  constructor(private readonly postagemService: PostagemService) {}
 
-  //normalmente o get() e get('/:id') vem antes dos gests com os outros filtros, isso é apenas por questão de organização do código.
   @Get()
   @HttpCode(HttpStatus.OK)
-  //utiliza promise porque depende da promessa da postagem.
   findAll(): Promise<Postagem[]> {
     return this.postagemService.findAll();
   }
@@ -37,7 +37,7 @@ export class PostagemController {
 
   @Get('/titulo/:titulo')
   @HttpCode(HttpStatus.OK)
-  findByTitulo(@Param('titulo') titulo: string): Promise<Postagem[]> {
+  findAllByTitulo(@Param('titulo') titulo: string): Promise<Postagem[]> {
     return this.postagemService.findAllByTitulo(titulo);
   }
 

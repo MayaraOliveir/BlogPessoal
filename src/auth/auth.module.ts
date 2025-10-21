@@ -15,11 +15,11 @@ import { LocalStrategy } from './strategy/local.strategy';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '2h' },
     }),
   ],
-  providers: [Bcrypt, AuthService, LocalStrategy, JwtStrategy], // bcrypt foi registada na AuthModule, pois ela é resposável pela lógica de criptografia
   controllers: [AuthController],
+  providers: [Bcrypt, AuthService, LocalStrategy, JwtStrategy],
   exports: [Bcrypt],
 })
 export class AuthModule {}

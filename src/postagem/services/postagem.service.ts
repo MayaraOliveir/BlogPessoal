@@ -12,7 +12,7 @@ export class PostagemService {
     private temaService: TemaService,
   ) {}
 
-  async findAll(): Promise<Postagem[]> {
+  async findAll() {
     return await this.postagemRepository.find({
       relations: {
         tema: true,
@@ -32,8 +32,9 @@ export class PostagemService {
       },
     });
 
-    if (!postagem)
-      throw new HttpException('Postagem não encontrada!', HttpStatus.NOT_FOUND);
+    if (!postagem) {
+      throw new HttpException('Postagem não encontrada', HttpStatus.NOT_FOUND);
+    }
 
     return postagem;
   }
@@ -57,15 +58,12 @@ export class PostagemService {
 
   async update(postagem: Postagem): Promise<Postagem> {
     await this.findById(postagem.id);
-
     await this.temaService.findById(postagem.tema.id);
-
     return await this.postagemRepository.save(postagem);
   }
 
   async delete(id: number): Promise<DeleteResult> {
     await this.findById(id);
-
     return await this.postagemRepository.delete(id);
   }
 }
